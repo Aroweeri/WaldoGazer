@@ -34,7 +34,6 @@ class GridImage:
 					heightAdd=1
 					remainderHeight-=1
 				subpixbuf = pixbuf.new_subpixbuf(currX, currY, columnWidth+widthAdd, rowHeight+heightAdd)
-				subpixbuf = subpixbuf.scale_simple(700,700,GdkPixbuf.InterpType.BILINEAR)
 				self.subpixbufs.append(subpixbuf)
 				widthAdd=0
 				heightAdd=0
