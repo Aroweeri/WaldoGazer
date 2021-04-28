@@ -57,8 +57,16 @@ class GridImage:
 		return self.height
 
 	def getNext(self):
+		self.currSubpixbuf+=1
 		if(self.currSubpixbuf == self.numSubpixbufs):
 			self.currSubpixbuf = 0
 		pixbuf = self.subpixbufs[self.currSubpixbuf]
-		self.currSubpixbuf+=1
 		return pixbuf
+
+	def getPrev(self):
+		self.currSubpixbuf-=1
+		if(self.currSubpixbuf == -1):
+			self.currSubpixbuf = self.numSubpixbufs-1
+		pixbuf = self.subpixbufs[self.currSubpixbuf]
+		return pixbuf
+
