@@ -20,6 +20,7 @@ class WaldoGazer(Gtk.Window):
 		Gtk.Window.__init__(self)
 
 		self.set_default_size(1000,800)
+		self.set_title("WaldoGazer")
 		scrolledWindow = Gtk.ScrolledWindow()
 
 		paned = Gtk.Paned.new(orientation=Gtk.Orientation.VERTICAL)
