@@ -36,12 +36,15 @@ class WaldoGazer(Gtk.Window):
 		                                     self.numColumns);
 
 		hbox = Gtk.HBox.new(Gtk.Orientation.HORIZONTAL, 10)
-		button = Gtk.Button.new_with_label("Next portion")
-		button.connect("clicked", self.on_next_clicked)
+		nextButton = Gtk.Button.new_with_label("Next")
+		nextButton.connect("clicked", self.on_next_clicked)
+		prevButton = Gtk.Button.new_with_label("Previous")
+		prevButton.connect("clicked", self.on_prev_clicked)
 
 		scrolledWindow.add(self.img)
 		hbox.add(file_chooser_button)
-		hbox.add(button)
+		hbox.add(nextButton)
+		hbox.add(prevButton)
 		paned.pack1(hbox, True, True)
 		paned.pack2(scrolledWindow, True, True)
 
@@ -87,4 +90,8 @@ class WaldoGazer(Gtk.Window):
 
 	def on_next_clicked(self, widget):
 		self.pixbufToDisplay = self.gridImage.getNext()
+		self.img.set_from_pixbuf(self.pixbufToDisplay)
+
+	def on_prev_clicked(self, widget):
+		self.pixbufToDisplay = self.gridImage.getPrev()
 		self.img.set_from_pixbuf(self.pixbufToDisplay)
