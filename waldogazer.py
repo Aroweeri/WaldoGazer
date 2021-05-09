@@ -21,13 +21,14 @@ class WaldoGazer(Gtk.Window):
 		self.set_default_size(1000,800)
 		self.set_title("WaldoGazer")
 
-		paned = Gtk.Paned.new(orientation=Gtk.Orientation.VERTICAL)
+		grid = Gtk.Grid.new()
 
 		file_chooser_button = Gtk.FileChooserButton()
 		file_chooser_button.connect("file-set", self.on_file_selected)
 
 		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file("image.jpg")
 		self.img = scaleimage.ScaleImage(self.pixbuf)
+		self.img.set_vexpand(True)
 		self.reload()
 
 		rowsScale = Gtk.Scale.new_with_range(Gtk.Orientation.VERTICAL, 1, 100, 1);
@@ -37,23 +38,27 @@ class WaldoGazer(Gtk.Window):
 		rowsScale.set_value(self.numRows)
 		colsScale.set_value(self.numCols)
 
-		hbox = Gtk.HBox.new(Gtk.Orientation.HORIZONTAL, 10)
 		nextButton = Gtk.Button.new_with_label("Next")
 		nextButton.connect("clicked", self.on_next_clicked)
 		prevButton = Gtk.Button.new_with_label("Previous")
 		prevButton.connect("clicked", self.on_prev_clicked)
 
-		hbox.add(file_chooser_button)
-		hbox.add(nextButton)
-		hbox.add(prevButton)
-		hbox.add(rowsScale);
-		hbox.add(colsScale);
-		paned.pack1(hbox, True, True)
-		paned.pack2(self.img, True, True)
+		file_chooser_button.set_hexpand(True)
+		rowsScale.set_hexpand(True)
+		colsScale.set_hexpand(True)
+		nextButton.set_hexpand(True)
+		prevButton.set_hexpand(True)
+
+		grid.attach(file_chooser_button, 0, 0, 1, 1)
+		grid.attach(nextButton, 1, 0, 1, 1)
+		grid.attach(prevButton, 2, 0, 1, 1)
+		grid.attach(rowsScale, 3, 0, 1, 1)
+		grid.attach(colsScale, 4, 0, 1, 1)
+		grid.attach(self.img, 0, 1, 5, 1)
 
 		self.connect("destroy", Gtk.main_quit)
 
-		self.add(paned)
+		self.add(grid)
 
 	def on_file_selected(self, button):
 		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(button.get_filename())
