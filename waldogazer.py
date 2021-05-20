@@ -4,6 +4,7 @@ from gi.repository import Gtk
 from gi.repository import GdkPixbuf
 import gridimage
 import scaleimage
+import recentlist
 
 
 class WaldoGazer(Gtk.Window):
@@ -14,6 +15,9 @@ class WaldoGazer(Gtk.Window):
 	pixbuf=None
 	pixbufToDisplay=None
 	img=None
+	recentFile="recent.txt"
+	recentList = None
+	grid = None
 
 	def __init__(self, pixbuf, img):
 		Gtk.Window.__init__(self)
@@ -21,13 +25,13 @@ class WaldoGazer(Gtk.Window):
 		self.set_default_size(1000,800)
 		self.set_title("WaldoGazer")
 
-		grid = Gtk.Grid.new()
+		self.grid = Gtk.Grid.new()
 
 		file_chooser_button = Gtk.FileChooserButton()
 		file_chooser_button.connect("file-set", self.on_file_selected)
 
-		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file("image.jpg")
-		self.img = scaleimage.ScaleImage(self.pixbuf)
+		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file("blank.png")
+		self.img = scaleimage.ScaleImage(self.pixbuf, "blank.png")
 		self.img.set_vexpand(True)
 		self.reload()
 
@@ -49,28 +53,35 @@ class WaldoGazer(Gtk.Window):
 		nextButton.set_hexpand(True)
 		prevButton.set_hexpand(True)
 
-		grid.attach(file_chooser_button, 0, 0, 1, 1)
-		grid.attach(nextButton, 1, 0, 1, 1)
-		grid.attach(prevButton, 2, 0, 1, 1)
-		grid.attach(rowsScale, 3, 0, 1, 1)
-		grid.attach(colsScale, 4, 0, 1, 1)
-		grid.attach(self.img, 0, 1, 5, 1)
+		self.recentList = recentlist.RecentList(self.recentFile)
+		self.recentList.connect("recent_file_selected", self.on_recent_file_selected);
+
+		self.grid.attach(file_chooser_button, 0, 0, 1, 1)
+		self.grid.attach(nextButton, 1, 0, 1, 1)
+		self.grid.attach(prevButton, 2, 0, 1, 1)
+		self.grid.attach(rowsScale, 3, 0, 1, 1)
+		self.grid.attach(colsScale, 4, 0, 1, 1)
+		self.grid.attach(self.recentList, 0, 1, 5, 1)
+		self.grid.attach(self.img, 0, 2, 5, 1)
 
 		self.connect("destroy", Gtk.main_quit)
 
-		self.add(grid)
+		self.add(self.grid)
 
 	def on_file_selected(self, button):
-		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(button.get_filename())
+		filename = button.get_filename()
+		self.append_recent_file(filename)
+		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(filename)
 		self.reload()
+		self.reload_recentlist()
 
 	def on_next_clicked(self, widget):
 		self.pixbufToDisplay = self.gridImage.getNext()
-		self.img.change_image(self.pixbufToDisplay)
+		self.img.change_image(self.pixbufToDisplay, None)
 
 	def on_prev_clicked(self, widget):
 		self.pixbufToDisplay = self.gridImage.getPrev()
-		self.img.change_image(self.pixbufToDisplay)
+		self.img.change_image(self.pixbufToDisplay, None)
 
 	def on_rows_changed(self, scale):
 		self.numRows = int(scale.get_value())
@@ -81,6 +92,45 @@ class WaldoGazer(Gtk.Window):
 		self.reload()
 
 	def reload(self):
+		if(self.pixbuf == None):
+			return
+
 		self.pixbufToDisplay = self.pixbuf
 		self.gridImage = gridimage.GridImage(self.pixbuf, self.numRows, self.numCols)
-		self.img.change_image(self.pixbufToDisplay)
+		self.img.change_image(self.pixbufToDisplay, None)
+
+	def reload_recentlist(self):
+		self.grid.remove(self.recentList)
+		self.recentList = recentlist.RecentList(self.recentFile)
+		self.grid.attach(self.recentList, 0, 1, 5, 1)
+		self.show_all()
+
+	def append_recent_file(self, filename):
+		maxRecentFiles=10
+		recentFiles = []
+
+		#store current contents
+		recent_file = open(self.recentFile, "r")
+		for line in recent_file:
+			if(line != "\n"):
+				recentFiles.append(line.rstrip())
+		recent_file.close()
+
+		#shift lines backward one, add passed filename at end
+		numRecentFiles=len(recentFiles)
+		if(numRecentFiles >= maxRecentFiles):
+			for i in range(numRecentFiles-1):
+				recentFiles[i] = recentFiles[i+1]
+			recentFiles[numRecentFiles-1] = filename
+		else:
+			recentFiles.append(filename)
+
+		#write contents back
+		recent_file = open("recent.txt", "w")
+		for file in recentFiles:
+			recent_file.write(file + str("\n"))
+		recent_file.close()
+
+	def on_recent_file_selected(self, widget, filename):
+		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(filename)
+		self.reload()
