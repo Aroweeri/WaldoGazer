@@ -10,19 +10,19 @@ import overviewimage
 
 class WaldoGazer(Gtk.Window):
 
-	gridImage = None
-	numRows=3
-	numCols=3
-	pixbuf=None
-	pixbufToDisplay=None
-	img=None
-	recentFile="recent.txt"
-	recentList = None
-	grid = None
-	overviewImage = None
-	filename = None
-
 	def __init__(self, pixbuf, img):
+		self.gridImage = None
+		self.numRows=3
+		self.numCols=3
+		self.pixbuf=None
+		self.pixbufToDisplay=None
+		self.img=None
+		self.recentFile="recent.txt"
+		self.recentList = None
+		self.grid = None
+		self.overviewImage = None
+		self.filename = None
+
 		Gtk.Window.__init__(self)
 
 		self.set_default_size(1000,800)
@@ -107,7 +107,6 @@ class WaldoGazer(Gtk.Window):
 	def reload(self):
 		if(self.pixbuf == None):
 			return
-
 		self.pixbufToDisplay = self.pixbuf
 		self.gridImage = gridimage.GridImage(self.pixbuf, self.numRows, self.numCols)
 		self.img.change_image(self.pixbufToDisplay, None)

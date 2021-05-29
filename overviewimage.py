@@ -5,10 +5,9 @@ import cairo
 
 class OverviewImage(Gtk.DrawingArea):
 
-	gridimage = None
-	pixbuf = None
-
 	def __init__(self, gridimage):
+		self.gridimage = None
+		self.pixbuf = None
 		Gtk.DrawingArea.__init__(self)
 		self.gridimage = gridimage
 		if(self.gridimage != None):

@@ -5,23 +5,17 @@ from gi.repository import GdkPixbuf
 
 class GridImage:
 
-	width = 0
-	height = 0
-	numRows = 0
-	numColumns = 0
-	subpixbufs = []
-	numSubpixbufs = 0
-	currSubpixbuf = 0
-	pixbuf = None
-	rowHeight = 0
-	columnWidth = 0
-
 	def __init__(self, pixbuf, rows, columns):
 		self.width=pixbuf.get_width()
 		self.height=pixbuf.get_height()
 		self.numRows=rows
 		self.numColumns=columns
 		self.pixbuf = pixbuf
+		self.subpixbufs = []
+		self.numSubpixbufs = 0
+		self.currSubpixbuf = 0
+		self.rowHeight = 0
+		self.columnWidth = 0
 
 		remainderWidth = self.width%columns
 		remainderHeight = self.height%rows
