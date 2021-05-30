@@ -4,9 +4,6 @@ from gi.repository import Gtk, GdkPixbuf, Gdk
 
 class ScaleImage(Gtk.DrawingArea):
 
-	pixbuf = None
-	filename = None
-	
 	def __init__(self, pixbuf, filename):
 		Gtk.DrawingArea.__init__(self)
 		self.pixbuf = pixbuf

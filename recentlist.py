@@ -10,8 +10,6 @@ class RecentList(Gtk.Box):
 		'recent_file_selected' : (GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_STRING,))
 	}
 
-	filename=None
-	
 	def __init__(self, filename):
 		Gtk.Box.__init__(self, Gtk.Orientation.HORIZONTAL)
 		self.filename = filename
