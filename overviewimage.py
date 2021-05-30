@@ -58,8 +58,8 @@ class OverviewImage(Gtk.DrawingArea):
 
 		mask_cr.set_source_rgba(1,1,1,0);
 		mask_cr.set_operator(cairo.OPERATOR_CLEAR)
-		starty = self.gridimage.getCurrSubpixbuf()//self.gridimage.getNumRows() * self.gridimage.getRowHeight()
-		startx = self.gridimage.getCurrSubpixbuf()%self.gridimage.getNumColumns() * self.gridimage.getColumnWidth()
+		starty = ((self.gridimage.getCurrSubpixbuf())//self.gridimage.getNumColumns()) * self.gridimage.getRowHeight()
+		startx = (self.gridimage.getCurrSubpixbuf()%self.gridimage.getNumColumns()) * self.gridimage.getColumnWidth()
 		mask_cr.rectangle(startx, starty, self.gridimage.getColumnWidth(), self.gridimage.getRowHeight())
 		mask_cr.fill()
 		mask_cr.set_operator(cairo.OPERATOR_OVER)
