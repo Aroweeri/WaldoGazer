@@ -16,7 +16,10 @@ class RecentList(Gtk.Box):
 		self.update()
 
 	def update(self):
-		file = open(self.filename, "r")
+		try:
+			file = open(self.filename, "r")
+		except FileNotFoundError:
+			return
 		self.pack_start(Gtk.Label.new("Recent: "), True, True, 0)
 		for line in file:
 			ev = Gtk.EventBox()
