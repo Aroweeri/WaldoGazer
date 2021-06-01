@@ -123,19 +123,24 @@ class WaldoGazer(Gtk.Window):
 		recentFiles = []
 
 		#store current contents
-		recent_file = open(self.recentFile, "r")
-		for line in recent_file:
-			if(line != "\n"):
-				recentFiles.append(line.rstrip())
-		recent_file.close()
+		try:
+			recent_file = open(self.recentFile, "r")
+			for line in recent_file:
+				stripped = line.strip()
+				#don't copy any entries that match passed filename
+				if(stripped != "\n" and stripped != filename):
+					recentFiles.append(stripped)
+			recent_file.close()
 
-		#shift lines backward one, add passed filename at end
-		numRecentFiles=len(recentFiles)
-		if(numRecentFiles >= maxRecentFiles):
-			for i in range(numRecentFiles-1):
-				recentFiles[i] = recentFiles[i+1]
-			recentFiles[numRecentFiles-1] = filename
-		else:
+			#shift lines backward one, add passed filename at end
+			numRecentFiles=len(recentFiles)
+			if(numRecentFiles >= maxRecentFiles):
+				for i in range(numRecentFiles-1):
+					recentFiles[i] = recentFiles[i+1]
+				recentFiles[numRecentFiles-1] = filename
+			else:
+				recentFiles.append(filename)
+		except FileNotFoundError:
 			recentFiles.append(filename)
 
 		#write contents back
