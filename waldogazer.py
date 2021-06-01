@@ -81,7 +81,7 @@ class WaldoGazer(Gtk.Window):
 
 	def on_file_selected(self, button):
 		self.filename = button.get_filename()
-		self.append_recent_file(self.filename)
+		self.insert_recent_file(self.filename)
 		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(self.filename)
 		self.reload()
 		self.reload_recentlist()
@@ -115,10 +115,11 @@ class WaldoGazer(Gtk.Window):
 	def reload_recentlist(self):
 		self.grid.remove(self.recentList)
 		self.recentList = recentlist.RecentList(self.recentFile)
+		self.recentList.connect("recent_file_selected", self.on_recent_file_selected);
 		self.grid.attach(self.recentList, 0, 1, 5, 1)
 		self.show_all()
 
-	def append_recent_file(self, filename):
+	def insert_recent_file(self, filename):
 		maxRecentFiles=10
 		recentFiles = []
 
@@ -139,9 +140,10 @@ class WaldoGazer(Gtk.Window):
 					recentFiles[i] = recentFiles[i+1]
 				recentFiles[numRecentFiles-1] = filename
 			else:
-				recentFiles.append(filename)
+				recentFiles.insert(0,filename)
+
 		except FileNotFoundError:
-			recentFiles.append(filename)
+			recentFiles.insert(0,filename)
 
 		#write contents back
 		recent_file = open("recent.txt", "w")
@@ -150,5 +152,8 @@ class WaldoGazer(Gtk.Window):
 		recent_file.close()
 
 	def on_recent_file_selected(self, widget, filename):
-		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(filename)
+		self.filename = filename
+		self.insert_recent_file(self.filename)
+		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(self.filename)
 		self.reload()
+		self.reload_recentlist()
