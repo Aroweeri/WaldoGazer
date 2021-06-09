@@ -50,6 +50,13 @@ class WaldoGazer(Gtk.Window):
 		colsSpin = Gtk.SpinButton.new_with_range(1,50,1)
 		rowsSpin.set_value(self.numRows)
 		colsSpin.set_value(self.numCols)
+		rowsLabel = Gtk.Label.new("Rows")
+		colsLabel = Gtk.Label.new("Columns")
+		spinGrid = Gtk.Grid()
+		spinGrid.attach(rowsLabel, 0,0,1,1)
+		spinGrid.attach(rowsSpin, 1,0,1,1)
+		spinGrid.attach(colsLabel,0,1,1,1)
+		spinGrid.attach(colsSpin,1,1,1,1)
 
 		nextButton = Gtk.Button.new_with_label("Next")
 		nextButton.connect("clicked", self.on_next_clicked)
@@ -76,8 +83,7 @@ class WaldoGazer(Gtk.Window):
 		self.centerPanel.pack_start(self.img, True, True, 0)
 		self.rightPanel.pack_start(self.overviewImage, True, True, 0)
 		self.rightPanel.pack_start(buttonHBox, False, False, 0)
-		self.rightPanel.pack_start(rowsSpin, False, False, 0)
-		self.rightPanel.pack_start(colsSpin, False, False, 0)
+		self.rightPanel.pack_start(spinGrid, False, False, 0)
 
 		self.connect("destroy", Gtk.main_quit)
 
