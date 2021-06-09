@@ -11,7 +11,7 @@ class RecentList(Gtk.Box):
 	}
 
 	def __init__(self, filename):
-		Gtk.Box.__init__(self, Gtk.Orientation.HORIZONTAL)
+		Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
 		self.filename = filename
 		self.update()
 
@@ -20,15 +20,15 @@ class RecentList(Gtk.Box):
 			file = open(self.filename, "r")
 		except FileNotFoundError:
 			return
-		self.pack_start(Gtk.Label.new("Recent: "), True, True, 0)
+		self.pack_start(Gtk.Label.new("Recent: "), True, True, 5)
 		for line in file:
 			ev = Gtk.EventBox()
 			pixbuf = GdkPixbuf.Pixbuf.new_from_file(line.strip())
 			ev.connect("button_press_event", self.clicked)
 			img = scaleimage.ScaleImage(pixbuf, line.strip())
-			img.set_hexpand(True)
+			img.set_vexpand(True)
 			ev.add(img)
-			self.pack_start(ev, True, True, 0)
+			self.pack_start(ev, True, True, 5)
 		file.close()
 
 	def clicked(self, widget, event):
