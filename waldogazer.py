@@ -19,16 +19,25 @@ class WaldoGazer(Gtk.Window):
 		self.img=None
 		self.recentFile="recent.txt"
 		self.recentList = None
-		self.grid = None
 		self.overviewImage = None
 		self.filename = None
+		self.mainBox = None
+		self.leftPanel = None
+		self.centerPanel = None
+		self.rightPanel = None
 
 		Gtk.Window.__init__(self)
 
 		self.set_default_size(1000,800)
 		self.set_title("WaldoGazer")
 
-		self.grid = Gtk.Grid.new()
+		self.mainBox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
+		self.leftPanel = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+		self.centerPanel = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+		self.rightPanel = Gtk.Box(orientation = Gtk.Orientation.VERTICAL, spacing = 5)
+		self.mainBox.pack_start(self.leftPanel, False, False, 5)
+		self.mainBox.pack_start(self.centerPanel, True, True, 5)
+		self.mainBox.pack_start(self.rightPanel, True, True, 5)
 
 		file_chooser_button = Gtk.FileChooserButton()
 		file_chooser_button.connect("file-set", self.on_file_selected)
@@ -36,23 +45,19 @@ class WaldoGazer(Gtk.Window):
 		self.filename = "blank.png"
 		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(self.filename)
 		self.img = scaleimage.ScaleImage(self.pixbuf, self.filename)
-		self.img.set_vexpand(True)
 
-		rowsScale = Gtk.Scale.new_with_range(Gtk.Orientation.VERTICAL, 1, 100, 1);
-		colsScale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 100, 1);
-		rowsScale.set_value(self.numRows)
-		colsScale.set_value(self.numCols)
+		rowsSpin = Gtk.SpinButton.new_with_range(1,50,1)
+		colsSpin = Gtk.SpinButton.new_with_range(1,50,1)
+		rowsSpin.set_value(self.numRows)
+		colsSpin.set_value(self.numCols)
 
 		nextButton = Gtk.Button.new_with_label("Next")
 		nextButton.connect("clicked", self.on_next_clicked)
 		prevButton = Gtk.Button.new_with_label("Previous")
 		prevButton.connect("clicked", self.on_prev_clicked)
-
-		file_chooser_button.set_hexpand(True)
-		rowsScale.set_hexpand(True)
-		colsScale.set_hexpand(True)
-		nextButton.set_hexpand(True)
-		prevButton.set_hexpand(True)
+		buttonHBox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL, spacing = 5)
+		buttonHBox.pack_start(prevButton, True, True, 0)
+		buttonHBox.pack_start(nextButton, True, True, 0)
 
 		self.recentList = recentlist.RecentList(self.recentFile)
 		self.recentList.connect("recent_file_selected", self.on_recent_file_selected);
@@ -63,21 +68,20 @@ class WaldoGazer(Gtk.Window):
 
 		self.reload()
 
-		rowsScale.connect("value-changed", self.on_rows_changed); 
-		colsScale.connect("value-changed", self.on_cols_changed); 
+		rowsSpin.connect("value-changed", self.on_rows_changed); 
+		colsSpin.connect("value-changed", self.on_cols_changed); 
 
-		self.grid.attach(file_chooser_button, 0, 0, 1, 1)
-		self.grid.attach(nextButton, 1, 0, 1, 1)
-		self.grid.attach(prevButton, 2, 0, 1, 1)
-		self.grid.attach(rowsScale, 3, 0, 1, 1)
-		self.grid.attach(colsScale, 4, 0, 1, 1)
-		self.grid.attach(self.recentList, 0, 1, 5, 1)
-		self.grid.attach(self.img, 0, 2, 5, 1)
-		self.grid.attach(self.overviewImage, 5,0,1,1)
+		self.leftPanel.pack_start(file_chooser_button, False, False, 0)
+		self.leftPanel.pack_start(self.recentList, False, True, 0)
+		self.centerPanel.pack_start(self.img, True, True, 0)
+		self.rightPanel.pack_start(self.overviewImage, True, True, 0)
+		self.rightPanel.pack_start(buttonHBox, False, False, 0)
+		self.rightPanel.pack_start(rowsSpin, False, False, 0)
+		self.rightPanel.pack_start(colsSpin, False, False, 0)
 
 		self.connect("destroy", Gtk.main_quit)
 
-		self.add(self.grid)
+		self.add(self.mainBox)
 
 	def on_file_selected(self, button):
 		self.filename = button.get_filename()
@@ -113,10 +117,10 @@ class WaldoGazer(Gtk.Window):
 		self.overviewImage.change(self.gridImage)
 
 	def reload_recentlist(self):
-		self.grid.remove(self.recentList)
+		self.leftPanel.remove(self.recentList)
 		self.recentList = recentlist.RecentList(self.recentFile)
 		self.recentList.connect("recent_file_selected", self.on_recent_file_selected);
-		self.grid.attach(self.recentList, 0, 1, 5, 1)
+		self.leftPanel.pack_end(self.recentList, True, True, 0)
 		self.show_all()
 
 	def insert_recent_file(self, filename):
