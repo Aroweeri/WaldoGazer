@@ -117,8 +117,8 @@ class WaldoGazer(Gtk.Window):
 	def reload(self):
 		if(self.pixbuf == None):
 			return
-		self.pixbufToDisplay = self.pixbuf
 		self.gridImage = gridimage.GridImage(self.pixbuf, self.numRows, self.numCols)
+		self.pixbufToDisplay = self.gridImage.getSubpixbufs()[0]
 		self.img.change_image(self.pixbufToDisplay, None)
 		self.overviewImage.change(self.gridImage)
 
