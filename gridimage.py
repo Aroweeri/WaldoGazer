@@ -2,10 +2,12 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 from gi.repository import GdkPixbuf
+import cyclemode
+import random
 
 class GridImage:
 
-	def __init__(self, pixbuf, rows, columns):
+	def __init__(self, pixbuf, rows, columns, cycleMode):
 		self.width=pixbuf.get_width()
 		self.height=pixbuf.get_height()
 		self.numRows=rows
@@ -16,6 +18,7 @@ class GridImage:
 		self.currSubpixbuf = 0
 		self.rowHeight = 0
 		self.columnWidth = 0
+		self.tileIndexes = [] #list containing ordered or random sequence of subpixbufs
 
 		remainderWidth = self.width%columns
 		remainderHeight = self.height%rows
@@ -43,6 +46,14 @@ class GridImage:
 				currX+=self.columnWidth+widthAdd
 			currY+=self.rowHeight+heightAdd
 			currX=0
+
+		if(cycleMode == cyclemode.CycleMode.random):
+			for i in range(self.numSubpixbufs):
+				self.tileIndexes.append(i)
+			random.shuffle(self.tileIndexes)
+		else:
+			for i in range(self.numSubpixbufs):
+				self.tileIndexes.append(i)
 
 	def getNumRows(self):
 		return self.numRows
@@ -78,13 +89,13 @@ class GridImage:
 		self.currSubpixbuf+=1
 		if(self.currSubpixbuf == self.numSubpixbufs):
 			self.currSubpixbuf = 0
-		pixbuf = self.subpixbufs[self.currSubpixbuf]
+		pixbuf = self.subpixbufs[self.tileIndexes[self.currSubpixbuf]]
 		return pixbuf
 
 	def getPrev(self):
 		self.currSubpixbuf-=1
 		if(self.currSubpixbuf == -1):
 			self.currSubpixbuf = self.numSubpixbufs-1
-		pixbuf = self.subpixbufs[self.currSubpixbuf]
+		pixbuf = self.subpixbufs[self.tileIndexes[self.currSubpixbuf]]
 		return pixbuf
 
