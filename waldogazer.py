@@ -6,7 +6,7 @@ import gridimage
 import scaleimage
 import recentlist
 import overviewimage
-
+import cyclemode
 
 class WaldoGazer(Gtk.Window):
 
@@ -25,6 +25,7 @@ class WaldoGazer(Gtk.Window):
 		self.leftPanel = None
 		self.centerPanel = None
 		self.rightPanel = None
+		self.cycleMode = cyclemode.CycleMode.sequential;
 
 		Gtk.Window.__init__(self)
 
@@ -78,12 +79,25 @@ class WaldoGazer(Gtk.Window):
 		rowsSpin.connect("value-changed", self.on_rows_changed); 
 		colsSpin.connect("value-changed", self.on_cols_changed); 
 
+		radioLabel = Gtk.Label.new("Cycle Type")
+		self.sequentialRadio = Gtk.RadioButton.new_with_label(None, "Sequential")
+		self.randomRadio = Gtk.RadioButton.new_with_label_from_widget(self.sequentialRadio, "Random")
+
+		self.sequentialRadio.connect("toggled", self.cycleRadioToggled)
+		self.randomRadio.connect("toggled", self.cycleRadioToggled)
+
+		radioBox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+		radioBox.pack_start(radioLabel, False, False, 0)
+		radioBox.pack_start(self.sequentialRadio, False, False, 0)
+		radioBox.pack_start(self.randomRadio, False, False, 0)
+
 		self.leftPanel.pack_start(file_chooser_button, False, False, 0)
 		self.leftPanel.pack_start(self.recentList, False, True, 0)
 		self.centerPanel.pack_start(self.img, True, True, 0)
 		self.rightPanel.pack_start(self.overviewImage, True, True, 0)
 		self.rightPanel.pack_start(buttonHBox, False, False, 0)
 		self.rightPanel.pack_start(spinGrid, False, False, 0)
+		self.rightPanel.pack_start(radioBox, False, False, 0)
 
 		self.connect("destroy", Gtk.main_quit)
 
@@ -117,8 +131,8 @@ class WaldoGazer(Gtk.Window):
 	def reload(self):
 		if(self.pixbuf == None):
 			return
-		self.gridImage = gridimage.GridImage(self.pixbuf, self.numRows, self.numCols)
-		self.pixbufToDisplay = self.gridImage.getSubpixbufs()[0]
+		self.gridImage = gridimage.GridImage(self.pixbuf, self.numRows, self.numCols, self.cycleMode)
+		self.pixbufToDisplay = self.gridImage.getSubpixbufs()[self.gridImage.tileIndexes[self.gridImage.getCurrSubpixbuf()]]
 		self.img.change_image(self.pixbufToDisplay, None)
 		self.overviewImage.change(self.gridImage)
 
@@ -167,3 +181,10 @@ class WaldoGazer(Gtk.Window):
 		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(self.filename)
 		self.reload()
 		self.reload_recentlist()
+
+	def cycleRadioToggled(self, widget):
+		if(widget == self.sequentialRadio and self.sequentialRadio.get_active()):
+			self.cycleMode = cyclemode.CycleMode.sequential
+		elif (widget == self.randomRadio and self.randomRadio.get_active()):
+			self.cycleMode = cyclemode.CycleMode.random
+		self.reload()

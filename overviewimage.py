@@ -32,6 +32,25 @@ class OverviewImage(Gtk.DrawingArea):
 		Gdk.cairo_set_source_pixbuf(cr, self.pixbuf, 0, 0)
 		cr.paint()
 
+		#darken parts not shown
+		mask = cairo.ImageSurface(cairo.Format.ARGB32, self.pixbuf.get_width(), self.pixbuf.get_height())
+		mask_cr = cairo.Context(mask)
+
+		mask_cr.set_source_rgba(1,1,1,1);
+		mask_cr.rectangle(0,0,self.pixbuf.get_width(), self.pixbuf.get_height())
+		mask_cr.fill()
+
+		mask_cr.set_source_rgba(1,1,1,0);
+		mask_cr.set_operator(cairo.OPERATOR_CLEAR)
+		starty = ((self.gridimage.tileIndexes[self.gridimage.getCurrSubpixbuf()])//self.gridimage.getNumColumns()) * self.gridimage.getRowHeight()
+		startx = (self.gridimage.tileIndexes[self.gridimage.getCurrSubpixbuf()]%self.gridimage.getNumColumns()) * self.gridimage.getColumnWidth()
+		mask_cr.rectangle(startx, starty, self.gridimage.getColumnWidth(), self.gridimage.getRowHeight())
+		mask_cr.fill()
+		mask_cr.set_operator(cairo.OPERATOR_OVER)
+
+		cr.set_source_rgba(0,0,0,0.5)
+		cr.mask_surface(mask, 0, 0)
+
 		#draw horizontal lines
 		cr.set_source_rgb(255,255,255)
 		cr.set_line_width(3)
@@ -48,21 +67,3 @@ class OverviewImage(Gtk.DrawingArea):
 			cr.line_to(x, self.gridimage.getHeight())
 		cr.stroke()
 
-		#darken parts not shown
-		mask = cairo.ImageSurface(cairo.Format.ARGB32, self.pixbuf.get_width(), self.pixbuf.get_height())
-		mask_cr = cairo.Context(mask)
-
-		mask_cr.set_source_rgba(1,1,1,1);
-		mask_cr.rectangle(0,0,self.pixbuf.get_width(), self.pixbuf.get_height())
-		mask_cr.fill()
-
-		mask_cr.set_source_rgba(1,1,1,0);
-		mask_cr.set_operator(cairo.OPERATOR_CLEAR)
-		starty = ((self.gridimage.getCurrSubpixbuf())//self.gridimage.getNumColumns()) * self.gridimage.getRowHeight()
-		startx = (self.gridimage.getCurrSubpixbuf()%self.gridimage.getNumColumns()) * self.gridimage.getColumnWidth()
-		mask_cr.rectangle(startx, starty, self.gridimage.getColumnWidth(), self.gridimage.getRowHeight())
-		mask_cr.fill()
-		mask_cr.set_operator(cairo.OPERATOR_OVER)
-
-		cr.set_source_rgba(0,0,0,0.5)
-		cr.mask_surface(mask, 0, 0)
