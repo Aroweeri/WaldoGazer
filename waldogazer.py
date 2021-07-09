@@ -31,7 +31,10 @@ class WaldoGazer(Gtk.Window):
 
 		self.set_default_size(1000,800)
 		self.set_title("WaldoGazer")
+	
+		self.menubar = self.buildMenu()
 
+		self.vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
 		self.mainBox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
 		self.leftPanel = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
 		self.centerPanel = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
@@ -39,9 +42,8 @@ class WaldoGazer(Gtk.Window):
 		self.mainBox.pack_start(self.leftPanel, False, False, 5)
 		self.mainBox.pack_start(self.centerPanel, True, True, 5)
 		self.mainBox.pack_start(self.rightPanel, True, True, 5)
-
-		file_chooser_button = Gtk.FileChooserButton()
-		file_chooser_button.connect("file-set", self.on_file_selected)
+		self.vbox.pack_start(self.menubar, False, False, 0);
+		self.vbox.pack_start(self.mainBox, True, True, 1);
 
 		self.filename = "blank.png"
 		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(self.filename)
@@ -91,7 +93,6 @@ class WaldoGazer(Gtk.Window):
 		radioBox.pack_start(self.sequentialRadio, False, False, 0)
 		radioBox.pack_start(self.randomRadio, False, False, 0)
 
-		self.leftPanel.pack_start(file_chooser_button, False, False, 0)
 		self.leftPanel.pack_start(self.recentList, False, True, 0)
 		self.centerPanel.pack_start(self.img, True, True, 0)
 		self.rightPanel.pack_start(self.overviewImage, True, True, 0)
@@ -101,14 +102,7 @@ class WaldoGazer(Gtk.Window):
 
 		self.connect("destroy", Gtk.main_quit)
 
-		self.add(self.mainBox)
-
-	def on_file_selected(self, button):
-		self.filename = button.get_filename()
-		self.insert_recent_file(self.filename)
-		self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(self.filename)
-		self.reload()
-		self.reload_recentlist()
+		self.add(self.vbox)
 
 	def on_next_clicked(self, widget):
 		self.pixbufToDisplay = self.gridImage.getNext()
@@ -188,3 +182,36 @@ class WaldoGazer(Gtk.Window):
 		elif (widget == self.randomRadio and self.randomRadio.get_active()):
 			self.cycleMode = cyclemode.CycleMode.random
 		self.reload()
+
+	def fileOpenClicked(self, widget):
+		dialog = Gtk.FileChooserDialog( title="Open...", parent=self, action=Gtk.FileChooserAction.OPEN)
+		dialog.add_buttons( Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+
+		response = dialog.run()
+		if response == Gtk.ResponseType.OK:
+			self.filename = dialog.get_filename() 
+			self.insert_recent_file(self.filename)
+			self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(self.filename)
+			self.reload()
+			self.reload_recentlist()
+		dialog.destroy()
+
+
+	def buildMenu(self):
+
+		mb = Gtk.MenuBar()
+
+		filemenu = Gtk.Menu()
+
+		filem = Gtk.MenuItem("File")
+		filem.set_submenu(filemenu)
+
+		fileOpen = Gtk.MenuItem("Open...")
+
+		fileOpen.connect("activate", self.fileOpenClicked)
+
+		filemenu.append(fileOpen)
+
+		mb.append(filem)
+
+		return mb
