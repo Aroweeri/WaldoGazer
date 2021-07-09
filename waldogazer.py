@@ -65,9 +65,11 @@ class WaldoGazer(Gtk.Window):
 		nextButton.connect("clicked", self.on_next_clicked)
 		prevButton = Gtk.Button.new_with_label("Previous")
 		prevButton.connect("clicked", self.on_prev_clicked)
+		self.positionIndicator = Gtk.Label("0/0")
 		buttonHBox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL, spacing = 5)
 		buttonHBox.pack_start(prevButton, True, True, 0)
 		buttonHBox.pack_start(nextButton, True, True, 0)
+		buttonHBox.pack_start(self.positionIndicator, False, False, 0)
 
 		self.recentList = recentlist.RecentList(self.recentFile)
 		self.recentList.connect("recent_file_selected", self.on_recent_file_selected);
@@ -108,11 +110,13 @@ class WaldoGazer(Gtk.Window):
 		self.pixbufToDisplay = self.gridImage.getNext()
 		self.img.change_image(self.pixbufToDisplay, None)
 		self.overviewImage.queue_draw()
+		self.updatePositionIndicator()
 
 	def on_prev_clicked(self, widget):
 		self.pixbufToDisplay = self.gridImage.getPrev()
 		self.img.change_image(self.pixbufToDisplay, None)
 		self.overviewImage.queue_draw()
+		self.updatePositionIndicator()
 
 	def on_rows_changed(self, scale):
 		self.numRows = int(scale.get_value())
@@ -129,6 +133,7 @@ class WaldoGazer(Gtk.Window):
 		self.pixbufToDisplay = self.gridImage.getSubpixbufs()[self.gridImage.tileIndexes[self.gridImage.getCurrSubpixbuf()]]
 		self.img.change_image(self.pixbufToDisplay, None)
 		self.overviewImage.change(self.gridImage)
+		self.updatePositionIndicator()
 
 	def reload_recentlist(self):
 		self.leftPanel.remove(self.recentList)
@@ -215,3 +220,6 @@ class WaldoGazer(Gtk.Window):
 		mb.append(filem)
 
 		return mb
+
+	def updatePositionIndicator(self):
+		self.positionIndicator.set_text(str(self.gridImage.getCurrSubpixbuf()+1) + "/" + str(self.numCols * self.numRows))
