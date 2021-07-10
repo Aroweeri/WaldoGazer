@@ -7,6 +7,7 @@ import scaleimage
 import recentlist
 import overviewimage
 import cyclemode
+import os
 
 class WaldoGazer(Gtk.Window):
 
@@ -134,6 +135,7 @@ class WaldoGazer(Gtk.Window):
 		self.img.change_image(self.pixbufToDisplay, None)
 		self.overviewImage.change(self.gridImage)
 		self.updatePositionIndicator()
+		self.set_title(os.path.basename(self.filename) + " - WaldoGazer")
 
 	def reload_recentlist(self):
 		self.leftPanel.remove(self.recentList)
