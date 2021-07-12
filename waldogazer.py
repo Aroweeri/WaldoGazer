@@ -27,6 +27,7 @@ class WaldoGazer(Gtk.Window):
 		self.centerPanel = None
 		self.rightPanel = None
 		self.cycleMode = cyclemode.CycleMode.sequential;
+		self.overlapAmount = 0;
 
 		Gtk.Window.__init__(self)
 
@@ -96,12 +97,16 @@ class WaldoGazer(Gtk.Window):
 		radioBox.pack_start(self.sequentialRadio, False, False, 0)
 		radioBox.pack_start(self.randomRadio, False, False, 0)
 
+		overlapCheckBox = Gtk.CheckButton.new_with_label("Overlap Tiles")
+		overlapCheckBox.connect("toggled", self.on_overlap_check_clicked)
+
 		self.leftPanel.pack_start(self.recentList, False, True, 0)
 		self.centerPanel.pack_start(self.img, True, True, 0)
 		self.rightPanel.pack_start(self.overviewImage, True, True, 0)
 		self.rightPanel.pack_start(buttonHBox, False, False, 0)
 		self.rightPanel.pack_start(spinGrid, False, False, 0)
 		self.rightPanel.pack_start(radioBox, False, False, 0)
+		self.rightPanel.pack_start(overlapCheckBox, False, False, 0)
 
 		self.connect("destroy", Gtk.main_quit)
 
@@ -130,7 +135,7 @@ class WaldoGazer(Gtk.Window):
 	def reload(self):
 		if(self.pixbuf == None):
 			return
-		self.gridImage = gridimage.GridImage(self.pixbuf, self.numRows, self.numCols, self.cycleMode)
+		self.gridImage = gridimage.GridImage(self.pixbuf, self.numRows, self.numCols, self.cycleMode, self.overlapAmount)
 		self.pixbufToDisplay = self.gridImage.getSubpixbufs()[self.gridImage.tileIndexes[self.gridImage.getCurrSubpixbuf()]]
 		self.img.change_image(self.pixbufToDisplay, None)
 		self.overviewImage.change(self.gridImage)
@@ -225,3 +230,9 @@ class WaldoGazer(Gtk.Window):
 
 	def updatePositionIndicator(self):
 		self.positionIndicator.set_text(str(self.gridImage.getCurrSubpixbuf()+1) + "/" + str(self.numCols * self.numRows))
+	
+	def on_overlap_check_clicked(self, widget):
+		if(widget.get_active()):
+			self.overlapAmount = 0.10
+		else:
+			self.overlapAmount = 0

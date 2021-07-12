@@ -7,7 +7,7 @@ import random
 
 class GridImage:
 
-	def __init__(self, pixbuf, rows, columns, cycleMode):
+	def __init__(self, pixbuf, rows, columns, cycleMode, overlapAmount):
 		self.width=pixbuf.get_width()
 		self.height=pixbuf.get_height()
 		self.numRows=rows
@@ -18,6 +18,7 @@ class GridImage:
 		self.currSubpixbuf = 0
 		self.rowHeight = 0
 		self.columnWidth = 0
+		self.overlapAmount = overlapAmount
 		self.tileIndexes = [] #list containing ordered or random sequence of subpixbufs
 
 		remainderWidth = self.width%columns
@@ -39,6 +40,16 @@ class GridImage:
 				if(remainderHeight > 0):
 					heightAdd=1
 					remainderHeight-=1
+				if(overlapAmount != 0):
+					#top left corner tile
+					if(i == 0 and j == 0):
+					#top right corner tile
+					elif(i == self.numColumns-1 and j == 0):
+					#bottom left corner tile
+					elif (i == 0 and j == self.numRows-1):
+					#bottom right corner tile
+					elif (i == self.numColumns-1 and j == self.numRows-1):
+
 				subpixbuf = pixbuf.new_subpixbuf(currX, currY, self.columnWidth+widthAdd, self.rowHeight+heightAdd)
 				self.subpixbufs.append(subpixbuf)
 				widthAdd=0
