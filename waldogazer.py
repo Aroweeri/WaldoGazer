@@ -27,7 +27,7 @@ class WaldoGazer(Gtk.Window):
 		self.centerPanel = None
 		self.rightPanel = None
 		self.cycleMode = cyclemode.CycleMode.sequential;
-		self.overlapAmount = 0;
+		self.overlapPercent = 0;
 
 		Gtk.Window.__init__(self)
 
@@ -135,7 +135,7 @@ class WaldoGazer(Gtk.Window):
 	def reload(self):
 		if(self.pixbuf == None):
 			return
-		self.gridImage = gridimage.GridImage(self.pixbuf, self.numRows, self.numCols, self.cycleMode, self.overlapAmount)
+		self.gridImage = gridimage.GridImage(self.pixbuf, self.numRows, self.numCols, self.cycleMode, self.overlapPercent)
 		self.pixbufToDisplay = self.gridImage.getSubpixbufs()[self.gridImage.tileIndexes[self.gridImage.getCurrSubpixbuf()]]
 		self.img.change_image(self.pixbufToDisplay, None)
 		self.overviewImage.change(self.gridImage)
@@ -233,6 +233,6 @@ class WaldoGazer(Gtk.Window):
 	
 	def on_overlap_check_clicked(self, widget):
 		if(widget.get_active()):
-			self.overlapAmount = 0.10
+			self.overlapPercent = 10 
 		else:
-			self.overlapAmount = 0
+			self.overlapPercent = 0
