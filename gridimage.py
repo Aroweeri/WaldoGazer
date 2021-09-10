@@ -137,14 +137,6 @@ class GridImage:
 		if(self.currSubpixbuf == self.numSubpixbufs):
 			self.currSubpixbuf = 0
 		pixbuf = self.subpixbufs[self.tileIndexes[self.currSubpixbuf]]
-
-		pos = tiletype.tileType(self.currSubpixbuf, self.numRows, self.numColumns)
-		if(pos == tiletype.TileType.CENTER):
-		elif(pos == tiletype.TileType.EDGE):
-			pos = tiletype.edgeType(self.currSubpixbuf, self.numRows, self.numColumns)
-		elif(pos == tiletype.TileType.CORNER):
-			pos = tiletype.cornerType(self.currSubpixbuf, self.numRows, self.numColumns)
-
 		return pixbuf
 
 	def getPrev(self):
