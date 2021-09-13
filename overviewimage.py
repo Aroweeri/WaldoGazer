@@ -51,11 +51,11 @@ class OverviewImage(Gtk.DrawingArea):
 			overlapWidth=self.gridimage.columnWidth//self.gridimage.overlapPercent
 			overlapHeight=self.gridimage.rowHeight//self.gridimage.overlapPercent
 
-			pos = tiletype.tileType(self.gridimage.getCurrSubpixbuf(), self.gridimage.numRows, self.gridimage.numColumns)
+			pos = tiletype.tileType(self.gridimage.tileIndexes[self.gridimage.getCurrSubpixbuf()], self.gridimage.numRows, self.gridimage.numColumns)
 			if(pos == tiletype.TileType.CENTER):
 				mask_cr.rectangle(startx-overlapWidth, starty-overlapHeight, self.gridimage.getColumnWidth()+overlapWidth*2, self.gridimage.getRowHeight()+overlapHeight*2)
 			elif(pos == tiletype.TileType.EDGE):
-				pos = tiletype.edgeType(self.gridimage.getCurrSubpixbuf(), self.gridimage.numRows, self.gridimage.numColumns)
+				pos = tiletype.edgeType(self.gridimage.tileIndexes[self.gridimage.getCurrSubpixbuf()], self.gridimage.numRows, self.gridimage.numColumns)
 				if(pos == tiletype.EdgeType.TOP):
 					mask_cr.rectangle(startx-overlapWidth, starty, self.gridimage.getColumnWidth()+overlapWidth*2, self.gridimage.getRowHeight()+overlapHeight)
 				elif(pos == tiletype.EdgeType.RIGHT):
@@ -65,7 +65,7 @@ class OverviewImage(Gtk.DrawingArea):
 				elif(pos == tiletype.EdgeType.LEFT):
 					mask_cr.rectangle(startx, starty-overlapHeight, self.gridimage.getColumnWidth()+overlapWidth, self.gridimage.getRowHeight()+overlapHeight*2)
 			elif(pos == tiletype.TileType.CORNER):
-				pos = tiletype.cornerType(self.gridimage.getCurrSubpixbuf(), self.gridimage.numRows, self.gridimage.numColumns)
+				pos = tiletype.cornerType(self.gridimage.tileIndexes[self.gridimage.getCurrSubpixbuf()], self.gridimage.numRows, self.gridimage.numColumns)
 				if(pos == tiletype.CornerType.TOPLEFT):
 					mask_cr.rectangle(startx, starty, self.gridimage.getColumnWidth()+overlapWidth, self.gridimage.getRowHeight()+overlapHeight)
 				elif(pos == tiletype.CornerType.TOPRIGHT):

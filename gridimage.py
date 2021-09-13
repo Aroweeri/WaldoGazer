@@ -94,6 +94,7 @@ class GridImage:
 			currY+=self.rowHeight+heightAdd
 			currX=0
 
+		# Randomize indexes if needed
 		if(cycleMode == cyclemode.CycleMode.random):
 			for i in range(self.numSubpixbufs):
 				self.tileIndexes.append(i)

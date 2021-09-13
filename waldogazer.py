@@ -236,3 +236,4 @@ class WaldoGazer(Gtk.Window):
 			self.overlapPercent = 10 
 		else:
 			self.overlapPercent = 0
+		self.reload()
