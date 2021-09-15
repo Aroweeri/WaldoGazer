@@ -2,6 +2,7 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
 import cairo
+import tiletype
 
 class OverviewImage(Gtk.DrawingArea):
 
@@ -44,11 +45,42 @@ class OverviewImage(Gtk.DrawingArea):
 		mask_cr.set_operator(cairo.OPERATOR_CLEAR)
 		starty = ((self.gridimage.tileIndexes[self.gridimage.getCurrSubpixbuf()])//self.gridimage.getNumColumns()) * self.gridimage.getRowHeight()
 		startx = (self.gridimage.tileIndexes[self.gridimage.getCurrSubpixbuf()]%self.gridimage.getNumColumns()) * self.gridimage.getColumnWidth()
-		mask_cr.rectangle(startx, starty, self.gridimage.getColumnWidth(), self.gridimage.getRowHeight())
+
+		if(self.gridimage.overlapPercent != 0):
+
+			overlapWidth=self.gridimage.columnWidth//self.gridimage.overlapPercent
+			overlapHeight=self.gridimage.rowHeight//self.gridimage.overlapPercent
+
+			pos = tiletype.tileType(self.gridimage.tileIndexes[self.gridimage.getCurrSubpixbuf()], self.gridimage.numRows, self.gridimage.numColumns)
+			if(pos == tiletype.TileType.CENTER):
+				mask_cr.rectangle(startx-overlapWidth, starty-overlapHeight, self.gridimage.getColumnWidth()+overlapWidth*2, self.gridimage.getRowHeight()+overlapHeight*2)
+			elif(pos == tiletype.TileType.EDGE):
+				pos = tiletype.edgeType(self.gridimage.tileIndexes[self.gridimage.getCurrSubpixbuf()], self.gridimage.numRows, self.gridimage.numColumns)
+				if(pos == tiletype.EdgeType.TOP):
+					mask_cr.rectangle(startx-overlapWidth, starty, self.gridimage.getColumnWidth()+overlapWidth*2, self.gridimage.getRowHeight()+overlapHeight)
+				elif(pos == tiletype.EdgeType.RIGHT):
+					mask_cr.rectangle(startx-overlapWidth, starty-overlapHeight, self.gridimage.getColumnWidth()+overlapWidth, self.gridimage.getRowHeight()+overlapHeight*2)
+				elif(pos == tiletype.EdgeType.BOTTOM):
+					mask_cr.rectangle(startx-overlapWidth, starty-overlapHeight, self.gridimage.getColumnWidth()+overlapWidth*2, self.gridimage.getRowHeight()+overlapHeight)
+				elif(pos == tiletype.EdgeType.LEFT):
+					mask_cr.rectangle(startx, starty-overlapHeight, self.gridimage.getColumnWidth()+overlapWidth, self.gridimage.getRowHeight()+overlapHeight*2)
+			elif(pos == tiletype.TileType.CORNER):
+				pos = tiletype.cornerType(self.gridimage.tileIndexes[self.gridimage.getCurrSubpixbuf()], self.gridimage.numRows, self.gridimage.numColumns)
+				if(pos == tiletype.CornerType.TOPLEFT):
+					mask_cr.rectangle(startx, starty, self.gridimage.getColumnWidth()+overlapWidth, self.gridimage.getRowHeight()+overlapHeight)
+				elif(pos == tiletype.CornerType.TOPRIGHT):
+					mask_cr.rectangle(startx-overlapWidth, starty, self.gridimage.getColumnWidth()+overlapWidth, self.gridimage.getRowHeight()+overlapHeight)
+				elif(pos == tiletype.CornerType.BOTTOMRIGHT):
+					mask_cr.rectangle(startx-overlapWidth, starty-overlapHeight, self.gridimage.getColumnWidth()+overlapWidth, self.gridimage.getRowHeight()+overlapHeight)
+				elif(pos == tiletype.CornerType.BOTTOMLEFT):
+					mask_cr.rectangle(startx, starty-overlapHeight, self.gridimage.getColumnWidth()+overlapWidth, self.gridimage.getRowHeight()+overlapHeight)
+		else:
+			mask_cr.rectangle(startx, starty, self.gridimage.getColumnWidth(), self.gridimage.getRowHeight())
+
 		mask_cr.fill()
 		mask_cr.set_operator(cairo.OPERATOR_OVER)
 
-		cr.set_source_rgba(0,0,0,0.5)
+		cr.set_source_rgba(0,0,0,0.7)
 		cr.mask_surface(mask, 0, 0)
 
 		#draw horizontal lines
