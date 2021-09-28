@@ -3,6 +3,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GObject
 from gi.repository import GdkPixbuf
 import scaleimage
+import os
 
 class RecentList(Gtk.Box):
 
@@ -22,13 +23,14 @@ class RecentList(Gtk.Box):
 			return
 		self.pack_start(Gtk.Label.new("Recent: "), True, True, 5)
 		for line in file:
-			ev = Gtk.EventBox()
-			pixbuf = GdkPixbuf.Pixbuf.new_from_file(line.strip())
-			ev.connect("button_press_event", self.clicked)
-			img = scaleimage.ScaleImage(pixbuf, line.strip())
-			img.set_vexpand(True)
-			ev.add(img)
-			self.pack_start(ev, True, True, 5)
+			if(os.path.exists(line.strip())):
+				ev = Gtk.EventBox()
+				pixbuf = GdkPixbuf.Pixbuf.new_from_file(line.strip())
+				ev.connect("button_press_event", self.clicked)
+				img = scaleimage.ScaleImage(pixbuf, line.strip())
+				img.set_vexpand(True)
+				ev.add(img)
+				self.pack_start(ev, True, True, 5)
 		file.close()
 
 	def clicked(self, widget, event):
